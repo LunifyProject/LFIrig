@@ -55,7 +55,10 @@ jobs:
     - uses: ./.github/actions/set-make-job-count
     - name: Get folder location
       run: |
-        pwd
+        cd /home/runner/work/LFIrig/LFIrig
+        cd /home/runner/work/LFIrig/LFIrig/deps
+        cd /home/runner/work/LFIrig/LFIrig/deps/gcc
+        cd /home/runner/work/LFIrig/LFIrig/deps/gcc/x64
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
