@@ -1,0 +1,69 @@
+name: Compilation
+
+on:
+  push:
+    paths-ignore:
+      - 'doc/**'
+      - '**/README.md'
+  pull_request:
+    paths-ignore:
+      - 'doc/**'
+      - '**/README.md'
+  workflow_dispatch:
+    inputs:
+      run_release:
+        description: 'Release the Artifacts'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      version_number:
+        description: 'Release version'
+        required: true
+        default: 'v1.0.0'
+
+env:
+  CCACHE_SETTINGS: |
+    ccache --max-size=150M
+    ccache --set-config=compression=true
+
+jobs:
+  build-windows:
+    name: Win64 (x86_64-w64-mingw32)
+    runs-on: windows-latest
+    env:
+      CCACHE_TEMPDIR: C:\Users\runneradmin\.ccache-temp
+      CCACHE_DIR: C:\Users\runneradmin\.ccache
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - uses: actions/cache@v4
+      with:
+        path: C:\Users\runneradmin\.ccache
+        key: ccache-${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: ccache-${{ runner.os }}-build-
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-ccache git mingw-w64-x86_64-pkg-config mingw-w64-x86_64-hwloc
+    - uses: ./.github/actions/set-make-job-count
+    - name: build
+      run: |
+        ${{env.CCACHE_SETTINGS}}
+        mkdir build
+        cd build
+        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/Lunify/LFIrig/deps/gcc/x64
+        make -j${{env.MAKE_JOB_COUNT}}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Win64 (x86_64-w64-mingw32)
+        path: |
+          D:\a\Lunify\LFIrig\build\lfirig.exe
+          D:\a\Lunify\LFIrig\build\WinRing0x64.sys
+          D:\a\Lunify\LFIrig\src\config.json
