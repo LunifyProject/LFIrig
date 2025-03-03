@@ -40,9 +40,6 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
     - uses: actions/cache@v4
       with:
         path: C:\Users\runneradmin\.ccache
@@ -61,12 +58,12 @@ jobs:
         ${{env.CCACHE_SETTINGS}}
         mkdir build
         cd build
-        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/Lunify/LFIrig/deps/gcc/x64
+        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/LFIrig/LFIrig/deps/gcc/x64
         make -j${{env.MAKE_JOB_COUNT}}
     - uses: actions/upload-artifact@v4
       with:
         name: Win64 (x86_64-w64-mingw32)
         path: |
-          D:\a\Lunify\LFIrig\build\lfirig.exe
-          D:\a\Lunify\LFIrig\build\WinRing0x64.sys
-          D:\a\Lunify\LFIrig\src\config.json
+          D:\a\LFIrig\LFIrig\build\lfirig.exe
+          D:\a\LFIrig\LFIrig\build\WinRing0x64.sys
+          D:\a\LFIrig\LFIrig\src\config.json
