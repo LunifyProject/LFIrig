@@ -136,5 +136,5 @@ jobs:
           ${{env.CCACHE_SETTINGS}}
           mkdir build
           cd build
-          cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/LFIrig/LFIrig/deps/gcc/x64
+          cmake ..
           make -j${{env.MAKE_JOB_COUNT}}
