@@ -55,16 +55,13 @@ jobs:
     - uses: ./.github/actions/set-make-job-count
     - name: Get folder location
       run: |
-        cd /d/a/LFIrig/LFIrig
-        cd /d/a/LFIrig/LFIrig/deps
-        cd /d/a/LFIrig/LFIrig/deps/gcc
-        cd /d/a/LFIrig/LFIrig/deps/gcc/x64
+        ls /d/a/LFIrig/LFIrig/deps/gcc/x64
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
         mkdir build
         cd build
-        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/LFIrig/LFIrig/deps/gcc/x64
+        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/d/a/LFIrig/LFIrig/deps/gcc/x64
         make -j${{env.MAKE_JOB_COUNT}}
     - uses: actions/upload-artifact@v4
       with:
