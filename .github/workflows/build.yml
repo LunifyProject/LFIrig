@@ -129,7 +129,7 @@ jobs:
       - name: Update apt
         run: sudo apt update
       - name: Install dependencies
-        run: sudo apt-get -y install git build-essential cmake automake libtool autoconf libhwloc-dev libuv1-dev
+        run: sudo apt-get -y install git build-essential ccache cmake automake libtool autoconf libhwloc-dev libuv1-dev
       - uses: ./.github/actions/set-make-job-count
       - name: build
         run: |
