@@ -53,6 +53,9 @@ jobs:
         update: true
         install: mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-ccache git mingw-w64-x86_64-pkg-config mingw-w64-x86_64-hwloc
     - uses: ./.github/actions/set-make-job-count
+    - name: Get folder location
+      run: |
+        pwd
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
