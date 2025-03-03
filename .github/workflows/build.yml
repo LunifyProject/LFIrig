@@ -57,6 +57,9 @@ jobs:
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
+        mkdir build
+        cd build
+        cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/d/a/LFIrig/LFIrig/deps/gcc/x64
         make -j${{env.MAKE_JOB_COUNT}}
     - uses: actions/upload-artifact@v4
       with:
