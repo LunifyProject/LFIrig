@@ -65,14 +65,11 @@ jobs:
         cd build
         cmake ..
         make -j${{env.MAKE_JOB_COUNT}}
-    - name: debug
-      run: |
-        ls /Users/runner/work/LFIrig/LFIrig/build
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.toolchain.name }}
         path: |
-          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig.exe
+          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig
           /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/src/config.json
 
   build-windows:
