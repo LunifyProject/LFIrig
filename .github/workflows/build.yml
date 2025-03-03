@@ -144,3 +144,38 @@ jobs:
           path: |
             /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig
             /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/src/config.json
+
+  download:
+    name: Release Artifacts
+    needs: ['build-mac', 'build-windows', 'build-linux']
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run_release == 'true' }}
+    steps:
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release
+        merge-multiple: false
+    - name: Create tar.gz archive for 'Win64 (x86_64-w64-mingw32)'
+      run: |
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-gcc-win64.tar.gz' -C 'release/Win64 (x86_64-w64-mingw32)/build' lfirig -C '../src' config.json
+    - name: Create tar.gz archive for 'Linux x86_64 (x86_64-linux-gnu)'
+      run: |
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-linux64.tar.gz' -C 'release/Linux x86_64 (x86_64-linux-gnu)/build' lfirig -C '../src' config.json
+    - name: Create tar.gz archive for 'MacOS (x86_64-apple-darwin)'
+      run: |
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-macos-x64.tar.gz' -C 'release/MacOS (x86_64-apple-darwin)/build' lfirig -C '../src' config.json
+    - name: Create tar.gz archive for 'MacOS (arm64-apple-darwin)'
+      run: |
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-macos-arm64.tar.gz' -C 'release/MacOS (arm64-apple-darwin)/build' lfirig -C '../src' config.json
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: LFIrig ${{ github.event.inputs.version_number }}
+        tag_name: ${{ github.event.inputs.version_number }}
+        draft: true
+        prerelease: false
+        files: release/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
