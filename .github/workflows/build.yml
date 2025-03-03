@@ -28,6 +28,10 @@ env:
   CCACHE_SETTINGS: |
     ccache --max-size=150M
     ccache --set-config=compression=true
+  APT_SET_CONF: |
+    echo "Acquire::Retries \"3\";"         | sudo tee -a /etc/apt/apt.conf.d/80-custom
+    echo "Acquire::http::Timeout \"120\";" | sudo tee -a /etc/apt/apt.conf.d/80-custom
+    echo "Acquire::ftp::Timeout \"120\";"  | sudo tee -a /etc/apt/apt.conf.d/80-custom
 
 jobs:
   build-mac:
@@ -65,8 +69,8 @@ jobs:
       with:
         name: ${{ matrix.toolchain.name }}
         path: |
-          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/Darwin/main/release/bin/lunify-blockchain-depth
-
+          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig.exe
+          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/src/config.json
 
   build-windows:
     name: Win64 (x86_64-w64-mingw32)
@@ -109,3 +113,28 @@ jobs:
           D:\a\LFIrig\LFIrig\build\WinRing0x64.sys
           D:\a\LFIrig\LFIrig\src\config.json
 
+  build-linux:
+    name: 'Linux x86_64 (x86_64-linux-gnu)'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-libwallet-${{ github.sha }}
+      - name: Set apt conf
+        run: ${{env.APT_SET_CONF}}
+      - name: Update apt
+        run: sudo apt update
+      - name: Install dependencies
+        run: apt -y install git build-essential cmake automake libtool autoconf libhwloc-dev libuv1-dev
+      - uses: ./.github/actions/set-make-job-count
+      - name: build
+        run: |
+          ${{env.CCACHE_SETTINGS}}
+          mkdir build
+          cd build
+          cmake .. -G "Unix Makefiles" -DXMRIG_DEPS=/home/runner/work/LFIrig/LFIrig/deps/gcc/x64
+          make -j${{env.MAKE_JOB_COUNT}}
