@@ -30,6 +30,41 @@ env:
     ccache --set-config=compression=true
 
 jobs:
+  build-mac:
+    name: ${{ matrix.toolchain.name }}
+    runs-on: ${{ matrix.toolchain.os }}
+    env:
+      CCACHE_TEMPDIR: /tmp/.ccache-temp
+    strategy:
+      matrix:
+        toolchain:
+          - name: "MacOS (x86_64-apple-darwin)"
+            os: macos-13
+          - name: "MacOS (arm64-apple-darwin)"
+            os: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - uses: actions/cache@v4
+      with:
+        path: /Users/runner/Library/Caches/ccache
+        key: ccache-${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: ccache-${{ runner.os }}-build-
+    - name: install dependencies
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
+    - uses: ./.github/actions/set-make-job-count
+    - name: build
+      run: |
+        ${{env.CCACHE_SETTINGS}}
+        make -j${{env.MAKE_JOB_COUNT}}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.toolchain.name }}
+        path: |
+          /Users/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/Darwin/main/release/bin/lunify-blockchain-depth
+
+
   build-windows:
     name: Win64 (x86_64-w64-mingw32)
     runs-on: windows-latest
@@ -70,3 +105,4 @@ jobs:
           D:\a\LFIrig\LFIrig\build\lfirig.exe
           D:\a\LFIrig\LFIrig\build\WinRing0x64.sys
           D:\a\LFIrig\LFIrig\src\config.json
+
