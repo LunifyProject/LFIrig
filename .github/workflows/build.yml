@@ -158,7 +158,7 @@ jobs:
         merge-multiple: false
     - name: Create tar.gz archive for 'Win64 (x86_64-w64-mingw32)'
       run: |
-        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-gcc-win64.tar.gz' -C 'release/Win64 (x86_64-w64-mingw32)/build' lfirig -C '../src' config.json
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-gcc-win64.tar.gz' -C 'release/Win64 (x86_64-w64-mingw32)/build' lfirig.exe WinRing0x64.sys -C '../src' config.json
     - name: Create tar.gz archive for 'Linux x86_64 (x86_64-linux-gnu)'
       run: |
         tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-linux64.tar.gz' -C 'release/Linux x86_64 (x86_64-linux-gnu)/build' lfirig -C '../src' config.json
