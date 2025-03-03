@@ -52,7 +52,7 @@ jobs:
         key: ccache-${{ runner.os }}-build-${{ github.sha }}
         restore-keys: ccache-${{ runner.os }}-build-
     - name: install dependencies
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache hwloc
     - uses: ./.github/actions/set-make-job-count
     - name: build
       run: |
