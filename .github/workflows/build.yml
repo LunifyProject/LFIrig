@@ -145,6 +145,38 @@ jobs:
             /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig
             /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/src/config.json
 
+  build-linux-2204:
+    name: 'Linux x86_64 (2204_x86_64-linux-gnu)'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-libwallet-${{ github.sha }}
+      - name: Set apt conf
+        run: ${{env.APT_SET_CONF}}
+      - name: Update apt
+        run: sudo apt update
+      - name: Install dependencies
+        run: sudo apt-get -y install git build-essential ccache cmake automake libtool autoconf libhwloc-dev libuv1-dev
+      - uses: ./.github/actions/set-make-job-count
+      - name: build
+        run: |
+          ${{env.CCACHE_SETTINGS}}
+          mkdir build
+          cd build
+          cmake ..
+          make -j${{env.MAKE_JOB_COUNT}}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Linux x86_64 (x86_64-linux-gnu)
+          path: |
+            /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/build/lfirig
+            /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/src/config.json
+
   download:
     name: Release Artifacts
     needs: ['build-mac', 'build-windows', 'build-linux']
@@ -160,6 +192,9 @@ jobs:
       run: |
         tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-gcc-win64.tar.gz' -C 'release/Win64 (x86_64-w64-mingw32)/build' lfirig.exe WinRing0x64.sys -C '../src' config.json
     - name: Create tar.gz archive for 'Linux x86_64 (x86_64-linux-gnu)'
+      run: |
+        tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-linux64-2204.tar.gz' -C 'release/Linux x86_64 (2204_x86_64-linux-gnu)/build' lfirig -C '../src' config.json
+    - name: Create tar.gz archive for 'Linux x86_64 (2204_x86_64-linux-gnu)'
       run: |
         tar -czf 'release/LFIrig-${{ github.event.inputs.version_number }}-linux64.tar.gz' -C 'release/Linux x86_64 (x86_64-linux-gnu)/build' lfirig -C '../src' config.json
     - name: Create tar.gz archive for 'MacOS (x86_64-apple-darwin)'
