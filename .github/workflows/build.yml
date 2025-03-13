@@ -147,7 +147,7 @@ jobs:
 
   build-linux-2204:
     name: 'Linux x86_64 (2204_x86_64-linux-gnu)'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
         with:
